@@ -1,0 +1,1 @@
+CSV removed. Manual contact paste box added. Open index.html, paste contacts, click Add to Pending. Google Sheet submit remains same.

@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>Shaadi Sansar Telecaller CRM</title>
+<style>
+:root{
+  --bg1:#b50000;--bg2:#6b0000;--bg3:#220000;
+  --panel:#760000;--panel2:#4b0000;--gold:#ffd86a;--gold2:#e7a62e;
+  --line:#b43a16;--green:#12a85b;--red:#ef2b2b;--text:#fff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:Arial,sans-serif;color:var(--text);
+  background:#242424;min-height:100vh;
+}
+body:before{
+  content:"";position:fixed;inset:22px 48px;z-index:-2;
+  background:radial-gradient(circle at 50% 0%,#cf0000 0%,#8f0000 38%,#4d0000 72%,#260000 100%);
+  border:1px solid #3a3a3a;
+}
+body:after{
+  content:"";position:fixed;inset:22px 48px;z-index:-1;opacity:.12;pointer-events:none;
+  background-image:linear-gradient(45deg,rgba(255,255,255,.08) 25%,transparent 25%,transparent 50%,rgba(255,255,255,.08) 50%,rgba(255,255,255,.08) 75%,transparent 75%);
+  background-size:7px 7px;
+}
+header{
+  position:relative;z-index:1;max-width:1120px;margin:0 auto;
+  display:grid;grid-template-columns:230px 1fr 250px;gap:28px;align-items:center;
+  padding:34px 28px 12px;
+}
+.logo{text-align:center}
+.logo img{
+  max-width:560px;width:100%;max-height:135px;object-fit:contain;
+  filter:drop-shadow(0 10px 12px #000);
+  background:transparent!important;border:0!important;
+}
+.logo div{
+  margin-top:6px!important;color:#ffd86a!important;font-size:18px!important;font-weight:900!important;
+  text-shadow:0 3px 8px #000!important;letter-spacing:.8px!important;
+}
+.topStats{display:grid;grid-template-columns:1fr 1fr 1fr}
+.topStats div,.today{
+  border:1px solid var(--line);background:linear-gradient(145deg,#770000,#370000);
+  border-radius:10px;padding:15px 10px;text-align:center;box-shadow:0 10px 25px #0008;
+}
+.topStats b{display:block;color:var(--gold);font-size:24px;line-height:1.1}
+.topStats div:nth-child(2) b{color:#12d66d}
+.today b{color:#fff;font-size:18px}.today span{color:var(--gold);font-weight:bold}
+.main{
+  position:relative;z-index:1;max-width:1120px;margin:0 auto;
+  display:grid;grid-template-columns:330px 1fr 330px;gap:14px;padding:0 28px 12px;
+}
+.card{
+  border:1px solid var(--line);background:linear-gradient(160deg,#7a0000,#3b0000);
+  border-radius:9px;box-shadow:0 14px 28px #0009;overflow:hidden;
+}
+.card h2{margin:0;padding:18px;color:#ffe978;font-size:20px}
+.manualBox{padding:0 14px 13px;border-bottom:1px solid #a72a0b}
+.manualBox textarea{height:92px;font-size:13px}
+.manualBtns{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:8px}
+.tools{padding:14px}
+.search,input,select,textarea{
+  width:100%;border:1px solid #b83514;background:#4d0000;color:white;border-radius:7px;
+  padding:11px;font-size:14px;outline:none;
+}
+input::placeholder,textarea::placeholder{color:#e9d4d4}
+.tabs{display:grid;grid-template-columns:1fr 1fr;padding:0 14px 10px}
+.tabs button{
+  border:1px solid var(--line);padding:10px;background:#4b0000;color:#ffe978;font-weight:bold;
+  cursor:pointer;border-radius:0;font-size:14px;
+}
+.tabs button:first-child{border-radius:7px 0 0 7px}
+.tabs button:last-child{border-radius:0 7px 7px 0}
+.tabs .active{background:linear-gradient(#fff0a8,#e9aa35);color:#1d0800}
+.list{height:395px;overflow:auto}
+.item{
+  display:grid;grid-template-columns:36px 1fr;gap:9px;align-items:center;padding:11px 12px;
+  border-top:1px solid #a72a0b;cursor:pointer;
+}
+.item:hover,.item.active{background:linear-gradient(90deg,#ffd86a,#e4a331);color:#210a00}
+.icon{width:25px;height:25px;border-radius:50%;display:grid;place-items:center;font-weight:900}
+.pending .icon{background:#ef2b2b}.done .icon{background:var(--green)}.reminder .icon{background:#f59e0b}
+.item b{display:block;font-size:14px}.item span{font-size:12px}.empty{padding:14px;color:#fff;line-height:1.35}
+.detail{padding:0 16px 18px}
+.profile{display:flex;gap:14px;align-items:center;border-bottom:1px solid #a62b10;padding-bottom:14px}
+.phoneIcon{width:62px;height:62px;border-radius:8px;background:#fff6dc;color:#9a5200;display:grid;place-items:center;font-size:32px}
+.num{font-size:26px;font-weight:800}.name{color:#ffe978;font-size:18px}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+label{display:block;color:#ffe978;margin:14px 0 7px;font-weight:bold;font-size:14px}
+textarea{height:95px;resize:vertical}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px}
+button{border:1px solid #d59c2e;border-radius:7px;padding:11px;font-weight:800;cursor:pointer;font-size:14px}
+.gold{background:linear-gradient(#fff0a8,#e7a62e);color:#220900}
+.darkbtn{background:#540000;color:white}.danger{background:#7a0000;color:white}
+.settings{padding:0 16px 13px}.settings input{font-size:13px}.settings button{margin-top:8px!important;padding:9px!important}
+.reminders{height:513px;overflow:auto;padding:0 14px 14px}
+.rem{border:1px solid #a72a0b;border-radius:8px;margin-bottom:9px;padding:12px;cursor:pointer;background:#5a0000}
+.rem:hover{border-color:var(--gold);background:#780000}.badge{color:#ffe978;font-weight:bold}
+.small{font-size:12px;color:#f6d6c9}.hide{display:none!important}
+.submitBar{
+  position:relative;z-index:1;max-width:1120px;margin:0 auto 28px;
+  border:1px solid var(--line);background:#520000;border-radius:9px;
+  display:grid;grid-template-columns:1.3fr .9fr;overflow:hidden;
+}
+.submitBar button{border-radius:0;font-size:16px}
+.status{padding:14px 22px}.status b{display:block}.status span{color:#ff5454}
+.reminderPopupOverlay{position:fixed;inset:0;background:rgba(0,0,0,.72);z-index:9999;display:none;align-items:center;justify-content:center;padding:20px}
+.reminderPopup{max-width:520px;width:100%;border:2px solid #ffd86a;border-radius:16px;background:linear-gradient(160deg,#8b0000,#3b0000);box-shadow:0 18px 50px #000;color:#fff;overflow:hidden}
+.reminderPopup h3{margin:0;padding:18px 20px;background:linear-gradient(#fff0a8,#e7a62e);color:#230900;font-size:22px}
+.reminderPopup .body{padding:20px;line-height:1.45}
+.reminderPopup .phoneBig{font-size:30px;font-weight:900;color:#ffd86a;margin:8px 0}
+.reminderPopup .btnRow{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 20px 20px}
+@media(max-width:1100px){
+  body:before,body:after{inset:0}
+  header,.main,.submitBar{grid-template-columns:1fr;margin-left:12px;margin-right:12px;padding-left:12px;padding-right:12px}
+  .list,.reminders{height:auto;max-height:420px}
+}
+</style>
+</head>
+<body>
+<header><div class="topStats"><div><b id="pendingTop">0</b>Pending</div><div><b id="doneTop">0</b>Done</div><div><b id="remTop">0</b>Reminder</div></div><div class="logo"><img src="assets/images/logo.png" alt="Shaadi Sansar"><div style="margin-top:10px;color:#ffd86a;font-size:22px;font-weight:800;text-shadow:0 3px 8px #000;letter-spacing:.5px;">KHUSHBU MUKESHSINGH RAJPUT</div></div><div class="today">Today<br><b id="todayDate"></b><br>Welcome, <span>Telecaller</span></div></header>
+<div class="main"><section class="card"><h2>Contacts</h2>
+<div class="manualBox">
+<label style="margin-top:0">Manual Pending Contacts Paste करो</label>
+<textarea id="bulkContacts" placeholder="Example:
+Rahul Sharma, 9812345670
+Neha Verma 9876543210
+9351234567
+
+100 / 500 / 1000 numbers yaha paste karo"></textarea>
+<div class="manualBtns">
+<button class="gold" onclick="addManualContacts()">Add to Pending</button>
+<button class="danger" onclick="clearAllContacts()">Clear All</button>
+</div>
+<div class="small">Name optional है. Number line में कहीं भी होगा तो add हो जाएगा.</div>
+</div>
+<div class="tools"><input id="search" class="search" placeholder="🔍 Search number / name..." oninput="renderList()"></div><div class="tabs"><button id="pendingTab" class="active" onclick="setTab('pending')">Pending (<span id="pendingCount">0</span>)</button><button id="doneTab" onclick="setTab('done')">Done (<span id="doneCount">0</span>)</button></div><div id="contactList" class="list"></div></section>
+<section class="card"><h2>Contact Detail <button class="gold" style="float:right;padding:9px 16px" onclick="saveRecord()">Save / Update</button></h2><div class="settings"><input id="webAppUrl" placeholder="Google Apps Script Web App URL paste karo"><button class="darkbtn" style="margin-top:8px" onclick="saveSettings()">Save URL</button></div><div class="detail"><div class="profile"><div class="phoneIcon">📞</div><div><div class="num" id="phoneShow">Select Contact</div><div class="name" id="nameShow">Pending list se number click karo</div></div></div><input id="name" class="hide"><input id="phone" class="hide"><label>Reason / Remark *</label><textarea id="remark" placeholder="Customer ne kya bola..."></textarea><div class="row"><div><label>Call Status</label><select id="status"><option>Connected</option><option>Not Connected</option><option>Busy</option><option>Wrong Number</option><option>Interested</option><option>Not Interested</option><option>Follow-up</option></select></div><div><label>Reminder Closed?</label><select id="reminderClosed"><option value="No">No</option><option value="Yes">Yes</option></select></div></div><div class="row"><div><label>Next Reminder Date</label><input id="reminderDate" type="date"></div><div><label>Reminder Time</label><input id="reminderTime" type="time"></div></div><label>Follow-up Remark / Reminder Note</label><textarea id="reminderNote" placeholder="3 baje call karna / kal available..."></textarea><div class="btns"><button class="gold" onclick="saveRecord()">Save & Move to Done</button><button class="darkbtn" onclick="clearForm()">Clear</button></div><p id="msg" class="small"></p></div></section>
+<section class="card"><h2>🔔 Reminders (<span id="remCount">0</span>)</h2><div id="reminderList" class="reminders"></div></section></div>
+
+<div id="reminderPopupOverlay" class="reminderPopupOverlay">
+  <div class="reminderPopup">
+    <h3>⏰ Reminder Call</h3>
+    <div class="body">
+      <div class="small">Abhi is customer ko call karna hai:</div>
+      <div id="popupPhone" class="phoneBig"></div>
+      <div id="popupName" style="font-size:18px;color:#ffe978;font-weight:700;"></div>
+      <p><b>Time:</b> <span id="popupTime"></span></p>
+      <p><b>Reason:</b><br><span id="popupReason"></span></p>
+    </div>
+    <div class="btnRow">
+      <button class="gold" onclick="snoozeReminder()">Snooze 10 Minutes</button>
+      <button class="darkbtn" onclick="stopReminderPopup()">Stop</button>
+    </div>
+  </div>
+</div>
+
+<div class="submitBar"><button class="gold" onclick="submitFullDay()">☁ SUBMIT ALL DATA TO GOOGLE SHEET (End of Day)</button><div class="status"><b>Google Sheet Status</b><span id="submitMsg">Not Submitted Today</span></div></div>
+<script>
+let contacts=[], activeTab='pending', selectedPhone='', editingRecordIndex=-1;
+window.onload=()=>{todayDate.textContent=new Date().toLocaleDateString('en-GB',{day:'2-digit',month:'short',year:'numeric'});webAppUrl.value=localStorage.getItem('WEB_APP_URL')||'';contacts=JSON.parse(localStorage.getItem('MANUAL_CONTACTS')||'[]');renderList();renderReminders();setTimeout(checkReminderPopups,1000);reminderCheckTimer=setInterval(checkReminderPopups,30000);}
+function saveSettings(){localStorage.setItem('WEB_APP_URL',webAppUrl.value.trim());msg('URL saved.')}
+function addManualContacts(){
+ const text=bulkContacts.value.trim();
+ if(!text){msg('Pehle contacts paste/typing karo.');return}
+
+ let added=0, skipped=0;
+ const existing=new Set(contacts.map(c=>c.phone));
+
+ const lines=text.split(/\n+/).map(x=>x.trim()).filter(Boolean);
+ const numberMatches=text.match(/(?:\+?91[\s-]?)?[6-9][0-9\s-]{9,14}/g) || [];
+
+ if(lines.length){
+   lines.forEach(line=>{
+     const m=line.match(/(?:\+?91[\s-]?)?[6-9][0-9\s-]{9,14}/);
+     if(!m) return;
+     let ph=m[0].replace(/\D/g,'');
+     if(ph.length===12 && ph.startsWith('91')) ph=ph.slice(2);
+     if(ph.length>10) ph=ph.slice(-10);
+     if(ph.length!==10){skipped++;return}
+     let cname=line.replace(m[0],'').replace(/[,|:-]/g,' ').replace(/\s+/g,' ').trim();
+     if(existing.has(ph)){skipped++;return}
+     contacts.push({id:Date.now()+Math.random(),name:cname,phone:ph});
+     existing.add(ph); added++;
+   });
+ }
+
+ numberMatches.forEach(n=>{
+   let ph=n.replace(/\D/g,'');
+   if(ph.length===12 && ph.startsWith('91')) ph=ph.slice(2);
+   if(ph.length>10) ph=ph.slice(-10);
+   if(ph.length!==10){skipped++;return}
+   if(existing.has(ph)) return;
+   contacts.push({id:Date.now()+Math.random(),name:'',phone:ph});
+   existing.add(ph); added++;
+ });
+
+ localStorage.setItem('MANUAL_CONTACTS',JSON.stringify(contacts));
+ bulkContacts.value='';
+ activeTab='pending';
+ setTab('pending');
+ renderReminders();
+ msg(added+' contacts Pending में add हुए. '+skipped+' skipped/duplicate/invalid.');
+}
+function clearAllContacts(){if(!confirm('All contacts और local call records clear करने हैं?'))return;contacts=[];selectedPhone='';editingRecordIndex=-1;localStorage.removeItem('MANUAL_CONTACTS');localStorage.removeItem('CALL_RECORDS');clearForm();renderList();renderReminders();msg('All local data cleared.')}
+function records(){return JSON.parse(localStorage.getItem('CALL_RECORDS')||'[]')}function setRecords(r){localStorage.setItem('CALL_RECORDS',JSON.stringify(r))}function latest(phone){let r=records();for(let i=r.length-1;i>=0;i--)if(r[i].phone===phone)return{record:r[i],index:i};return null}
+function setTab(t){activeTab=t;pendingTab.classList.toggle('active',t==='pending');doneTab.classList.toggle('active',t==='done');renderList()}
+function stats(){let done=new Set(records().map(r=>r.phone));let p=contacts.filter(c=>!done.has(c.phone)).length,d=contacts.filter(c=>done.has(c.phone)).length,rm=records().filter(r=>r.reminderDate&&r.reminderClosed!=='Yes').length;pendingCount.textContent=p;pendingTop.textContent=p;doneCount.textContent=d;doneTop.textContent=d;remCount.textContent=rm;remTop.textContent=rm}
+function renderList(){stats();let q=search.value.toLowerCase(),box=contactList;box.innerHTML='';let arr=contacts.filter(c=>(c.phone+' '+c.name).toLowerCase().includes(q)).filter(c=>activeTab==='done'?!!latest(c.phone):!latest(c.phone));if(!arr.length){box.innerHTML='<div class="empty">No '+activeTab+' contacts.<br><br>Manual box में numbers paste करके Add to Pending दबाओ.</div>';return}arr.forEach(c=>{let l=latest(c.phone),rem=l&&l.record.reminderDate&&l.record.reminderClosed!=='Yes';let div=document.createElement('div');div.className='item '+(l?(rem?'reminder':'done'):'pending')+(selectedPhone===c.phone?' active':'');div.onclick=()=>selectContact(c.phone);
+let iconHtml = l ? (rem?'⏰':'✓') : '<button title="Remove this pending number" onclick="removePendingContact(event,\''+esc(c.phone)+'\')" style="width:28px;height:28px;border-radius:50%;padding:0;border:0;background:#ef2b2b;color:#000;font-weight:900;cursor:pointer;">×</button>';
+div.innerHTML='<div class="icon">'+iconHtml+'</div><div><b>'+esc(c.phone)+'</b><span>'+esc(c.name||'No name')+'</span></div>';box.appendChild(div)})}
+function removePendingContact(event, phoneNo){
+ event.stopPropagation();
+ if(latest(phoneNo)){msg('Done/Reminder number yaha se remove nahi hoga.');return}
+ if(!confirm('Ye pending number remove karna hai? '+phoneNo))return;
+ contacts=contacts.filter(c=>c.phone!==phoneNo);
+ localStorage.setItem('MANUAL_CONTACTS',JSON.stringify(contacts));
+ if(selectedPhone===phoneNo)clearForm();
+ renderList();
+ renderReminders();
+ msg('Pending number remove ho gaya: '+phoneNo);
+}
+function selectContact(p){selectedPhone=p;let c=contacts.find(x=>x.phone===p)||{},l=latest(p);if(l)fill(l.record,l.index);else{editingRecordIndex=-1;name.value=c.name||'';phone.value=c.phone||'';remark.value='';status.value='Connected';reminderDate.value='';reminderTime.value='';reminderClosed.value='No';reminderNote.value='';phoneShow.textContent=c.phone||'Select Contact';nameShow.textContent=c.name||''}renderList()}
+function fill(r,i){editingRecordIndex=i;selectedPhone=r.phone;name.value=r.name||'';phone.value=r.phone||'';phoneShow.textContent=r.phone||'';nameShow.textContent=r.name||'';remark.value=r.remark||'';status.value=r.status||'Connected';reminderDate.value=r.reminderDate||'';reminderTime.value=r.reminderTime||'';reminderClosed.value=r.reminderClosed||'No';reminderNote.value=r.reminderNote||''}
+function saveRecord(){if(!phone.value.trim()){msg('Pehle contact select karo.');return}let rec={timestamp:new Date().toLocaleString(),name:name.value.trim(),phone:phone.value.trim(),status:status.value,remark:remark.value.trim(),reminderDate:reminderDate.value,reminderTime:reminderTime.value,reminderClosed:reminderClosed.value,reminderNote:reminderNote.value.trim(), popupStopped:'No', snoozeUntil:''};let r=records();if(editingRecordIndex>=0)r[editingRecordIndex]=rec;else{r.push(rec);editingRecordIndex=r.length-1}setRecords(r);activeTab='done';setTab('done');renderReminders();msg('Local save ho gaya. Number Done में चला गया. End of day Google Sheet submit दबाना.')}
+function renderReminders(){stats();let box=reminderList,arr=records().map((r,i)=>({...r,_i:i})).filter(r=>r.reminderDate&&r.reminderClosed!=='Yes').sort((a,b)=>(a.reminderDate+a.reminderTime).localeCompare(b.reminderDate+b.reminderTime));box.innerHTML=arr.length?'':'<div class="small">No active reminders.</div>';arr.forEach(r=>{let d=document.createElement('div');d.className='rem';d.onclick=()=>{activeTab='done';setTab('done');fill(records()[r._i],r._i);msg('Reminder open हो गया. Remark update करके save करो.')};d.innerHTML='<div class="badge">⏰ '+esc(r.reminderDate)+' '+esc(r.reminderTime||'')+'</div><b>'+esc(r.phone)+' - '+esc(r.name||'')+'</b><p>'+esc(r.reminderNote||r.remark||'')+'</p><div class="small">Click to update</div>';box.appendChild(d)})}
+async function submitFullDay(){let url=webAppUrl.value.trim(),r=records();if(!url){submitMsg.textContent='Pehle Google Sheet URL paste karo.';return}if(!r.length){submitMsg.textContent='Submit karne ke liye data nahi hai.';return}submitMsg.textContent='Submitting...';try{await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'bulk',submittedAt:new Date().toLocaleString(),records:r})});submitMsg.textContent='Submitted Today: '+r.length+' records'}catch(e){submitMsg.textContent='Error. Local data safe hai.'}}
+function clearForm(){['name','phone','remark','reminderDate','reminderTime','reminderNote'].forEach(id=>document.getElementById(id).value='');phoneShow.textContent='Select Contact';nameShow.textContent='Pending list se number click karo';editingRecordIndex=-1;selectedPhone='';renderList()}
+function msg(t){document.getElementById('msg').textContent=t}function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
+
+let activePopupReminderIndex = -1;
+let reminderCheckTimer = null;
+
+function reminderDateTimeValue(r){
+  if(!r.reminderDate) return null;
+  let t = r.reminderTime || '00:00';
+  return new Date(r.reminderDate + 'T' + t);
+}
+
+function checkReminderPopups(){
+  const now = new Date();
+  const rs = records();
+  for(let i=0;i<rs.length;i++){
+    const r = rs[i];
+    if(!r.reminderDate || r.reminderClosed === 'Yes') continue;
+    if(r.popupStopped === 'Yes') continue;
+
+    const snoozeUntil = r.snoozeUntil ? new Date(r.snoozeUntil) : null;
+    if(snoozeUntil && snoozeUntil > now) continue;
+
+    const due = reminderDateTimeValue(r);
+    if(due && due <= now){
+      showReminderPopup(i);
+      return;
+    }
+  }
+}
+
+function showReminderPopup(index){
+  const r = records()[index];
+  if(!r) return;
+  activePopupReminderIndex = index;
+  popupPhone.textContent = r.phone || '';
+  popupName.textContent = r.name || '';
+  popupTime.textContent = (r.reminderDate || '') + ' ' + (r.reminderTime || '');
+  popupReason.textContent = r.reminderNote || r.remark || 'No reason added';
+  reminderPopupOverlay.style.display = 'flex';
+}
+
+function snoozeReminder(){
+  if(activePopupReminderIndex < 0) return;
+  let rs = records();
+  if(!rs[activePopupReminderIndex]) return;
+  rs[activePopupReminderIndex].snoozeUntil = new Date(Date.now() + 10*60*1000).toISOString();
+  setRecords(rs);
+  reminderPopupOverlay.style.display = 'none';
+  msg('Reminder 10 minute snooze ho gaya.');
+}
+
+function stopReminderPopup(){
+  if(activePopupReminderIndex < 0) return;
+  let rs = records();
+  if(!rs[activePopupReminderIndex]) return;
+  rs[activePopupReminderIndex].popupStopped = 'Yes';
+  setRecords(rs);
+  reminderPopupOverlay.style.display = 'none';
+  msg('Reminder popup stop ho gaya. Dobara popup nahi aayega.');
+}
+
+</script></body></html>

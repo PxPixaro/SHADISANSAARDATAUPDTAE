@@ -2,7 +2,7 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Shaadi Sansar Telecaller CRM</title>
+<title>Shaadi Sansar Telecaller CRM - Fixed Save</title>
 <style>
 :root{
   --bg1:#b50000;--bg2:#6b0000;--bg3:#220000;
@@ -136,7 +136,7 @@ Neha Verma 9876543210
 <div class="small">Name optional है. Number line में कहीं भी होगा तो add हो जाएगा.</div>
 </div>
 <div class="tools"><input id="search" class="search" placeholder="🔍 Search number / name..." oninput="renderList()"></div><div class="tabs"><button id="pendingTab" class="active" onclick="setTab('pending')">Pending (<span id="pendingCount">0</span>)</button><button id="doneTab" onclick="setTab('done')">Done (<span id="doneCount">0</span>)</button></div><div id="contactList" class="list"></div></section>
-<section class="card"><h2>Contact Detail <button class="gold" style="float:right;padding:9px 16px" onclick="saveRecord()">Save / Update</button></h2><div class="settings"><input id="webAppUrl" placeholder="Google Apps Script Web App URL paste karo"><button class="darkbtn" style="margin-top:8px" onclick="saveSettings()">Save URL</button></div><div class="detail"><div class="profile"><div class="phoneIcon">📞</div><div><div class="num" id="phoneShow">Select Contact</div><div class="name" id="nameShow">Pending list se number click karo</div></div></div><input id="name" class="hide"><input id="phone" class="hide"><label>Reason / Remark *</label><textarea id="remark" placeholder="Customer ne kya bola..."></textarea><div class="row"><div><label>Call Status</label><select id="status"><option>Connected</option><option>Not Connected</option><option>Busy</option><option>Wrong Number</option><option>Interested</option><option>Not Interested</option><option>Follow-up</option></select></div><div><label>Reminder Closed?</label><select id="reminderClosed"><option value="No">No</option><option value="Yes">Yes</option></select></div></div><div class="row"><div><label>Next Reminder Date</label><input id="reminderDate" type="date"></div><div><label>Reminder Time</label><input id="reminderTime" type="time"></div></div><label>Follow-up Remark / Reminder Note</label><textarea id="reminderNote" placeholder="3 baje call karna / kal available..."></textarea><div class="btns"><button class="gold" onclick="saveRecord()">Save & Move to Done</button><button class="darkbtn" onclick="clearForm()">Clear</button></div><p id="msg" class="small"></p></div></section>
+<section class="card"><h2>Contact Detail <button class="gold" style="float:right;padding:9px 16px" onclick="saveRecord()">Save / Update</button></h2><div class="settings"><input id="webAppUrl" placeholder="Google Apps Script Web App URL paste karo"><button class="darkbtn" style="margin-top:8px" onclick="saveSettings()">Save URL</button></div><div class="detail"><div class="profile"><div class="phoneIcon">📞</div><div><div class="num" id="phoneShow">Select Contact</div><div class="name" id="nameShow">Pending list se number click karo</div></div></div><input id="name" class="hide"><input id="phone" class="hide"><label>Reason / Remark *</label><textarea id="remark" placeholder="Customer ne kya bola..."></textarea><div class="row"><div><label>Call Status</label><select id="status"><option>Connected</option><option>Not Connected</option><option>Busy</option><option>Wrong Number</option><option>Interested</option><option>Not Interested</option><option>Follow-up</option></select></div><div><label>Reminder Closed?</label><select id="reminderClosed"><option value="No">No</option><option value="Yes">Yes</option></select></div></div><div class="row"><div><label>Next Reminder Date</label><input id="reminderDate" type="date"></div><div><label>Reminder Time</label><input id="reminderTime" type="time" autocomplete="off"></div></div><label>Follow-up Remark / Reminder Note</label><textarea id="reminderNote" placeholder="3 baje call karna / kal available..."></textarea><div class="btns"><button class="gold" onclick="saveRecord()">Save & Move to Done</button><button class="darkbtn" onclick="clearForm()">Clear</button></div><p id="msg" class="small"></p></div></section>
 <section class="card"><h2>🔔 Reminders (<span id="remCount">0</span>)</h2><div id="reminderList" class="reminders"></div></section></div>
 
 <div id="reminderPopupOverlay" class="reminderPopupOverlay">
@@ -223,7 +223,50 @@ function removePendingContact(event, phoneNo){
 }
 function selectContact(p){selectedPhone=p;let c=contacts.find(x=>x.phone===p)||{},l=latest(p);if(l)fill(l.record,l.index);else{editingRecordIndex=-1;name.value=c.name||'';phone.value=c.phone||'';remark.value='';status.value='Connected';reminderDate.value='';reminderTime.value='';reminderClosed.value='No';reminderNote.value='';phoneShow.textContent=c.phone||'Select Contact';nameShow.textContent=c.name||''}renderList()}
 function fill(r,i){editingRecordIndex=i;selectedPhone=r.phone;name.value=r.name||'';phone.value=r.phone||'';phoneShow.textContent=r.phone||'';nameShow.textContent=r.name||'';remark.value=r.remark||'';status.value=r.status||'Connected';reminderDate.value=r.reminderDate||'';reminderTime.value=r.reminderTime||'';reminderClosed.value=r.reminderClosed||'No';reminderNote.value=r.reminderNote||''}
-function saveRecord(){if(!phone.value.trim()){msg('Pehle contact select karo.');return}let rec={timestamp:new Date().toLocaleString(),name:name.value.trim(),phone:phone.value.trim(),status:status.value,remark:remark.value.trim(),reminderDate:reminderDate.value,reminderTime:reminderTime.value,reminderClosed:reminderClosed.value,reminderNote:reminderNote.value.trim(), popupStopped:'No', snoozeUntil:''};let r=records();if(editingRecordIndex>=0)r[editingRecordIndex]=rec;else{r.push(rec);editingRecordIndex=r.length-1}setRecords(r);activeTab='done';setTab('done');renderReminders();msg('Local save ho gaya. Number Done में चला गया. End of day Google Sheet submit दबाना.')}
+function saveRecord(){
+ try{
+  const el = id => document.getElementById(id);
+  const phoneEl = el('phone');
+  let ph = (phoneEl && phoneEl.value ? phoneEl.value : selectedPhone || '').replace(/\D/g,'');
+  if(ph.length===12 && ph.startsWith('91')) ph=ph.slice(2);
+  if(ph.length>10) ph=ph.slice(-10);
+  if(!ph || ph.length!==10){msg('Pehle left side se contact select karo.');return}
+
+  const old = latest(ph);
+  const oldRec = old ? old.record : {};
+  let timeVal = (el('reminderTime')?.value || '').trim();
+  let mt = timeVal.match(/(\d{1,2}):(\d{2})/);
+  timeVal = mt ? (mt[1].padStart(2,'0') + ':' + mt[2]) : '';
+
+  let rec={
+   timestamp:new Date().toLocaleString(),
+   name:(el('name')?.value || oldRec.name || '').trim(),
+   phone:ph,
+   status:el('status') ? el('status').value : 'Connected',
+   remark:(el('remark')?.value || '').trim(),
+   reminderDate:el('reminderDate') ? el('reminderDate').value : '',
+   reminderTime:timeVal,
+   reminderClosed:el('reminderClosed') ? el('reminderClosed').value : 'No',
+   reminderNote:(el('reminderNote')?.value || '').trim(),
+   popupStopped: oldRec.popupStopped || 'No',
+   snoozeUntil: oldRec.snoozeUntil || ''
+  };
+
+  let r=records();
+  const idx = editingRecordIndex>=0 ? editingRecordIndex : r.findIndex(x=>String(x.phone)===String(ph));
+  if(idx>=0){r[idx]=rec; editingRecordIndex=idx;} else {r.push(rec); editingRecordIndex=r.length-1;}
+  setRecords(r);
+  selectedPhone=ph;
+  activeTab='done';
+  setTab('done');
+  renderReminders();
+  fill(rec, editingRecordIndex);
+  msg(rec.reminderDate ? 'Save ho gaya. Number Done me chala gaya aur Reminder add ho gaya.' : 'Save ho gaya. Number Done me chala gaya. Reminder ke liye date/time bharo.');
+ }catch(e){
+  console.error(e);
+  msg('Save error: '+e.message);
+ }
+}
 function renderReminders(){stats();let box=reminderList,arr=records().map((r,i)=>({...r,_i:i})).filter(r=>r.reminderDate&&r.reminderClosed!=='Yes').sort((a,b)=>(a.reminderDate+a.reminderTime).localeCompare(b.reminderDate+b.reminderTime));box.innerHTML=arr.length?'':'<div class="small">No active reminders.</div>';arr.forEach(r=>{let d=document.createElement('div');d.className='rem';d.onclick=()=>{activeTab='done';setTab('done');fill(records()[r._i],r._i);msg('Reminder open हो गया. Remark update करके save करो.')};d.innerHTML='<div class="badge">⏰ '+esc(r.reminderDate)+' '+esc(r.reminderTime||'')+'</div><b>'+esc(r.phone)+' - '+esc(r.name||'')+'</b><p>'+esc(r.reminderNote||r.remark||'')+'</p><div class="small">Click to update</div>';box.appendChild(d)})}
 async function submitFullDay(){let url=webAppUrl.value.trim(),r=records();if(!url){submitMsg.textContent='Pehle Google Sheet URL paste karo.';return}if(!r.length){submitMsg.textContent='Submit karne ke liye data nahi hai.';return}submitMsg.textContent='Submitting...';try{await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'bulk',submittedAt:new Date().toLocaleString(),records:r})});submitMsg.textContent='Submitted Today: '+r.length+' records'}catch(e){submitMsg.textContent='Error. Local data safe hai.'}}
 function clearForm(){['name','phone','remark','reminderDate','reminderTime','reminderNote'].forEach(id=>document.getElementById(id).value='');phoneShow.textContent='Select Contact';nameShow.textContent='Pending list se number click karo';editingRecordIndex=-1;selectedPhone='';renderList()}

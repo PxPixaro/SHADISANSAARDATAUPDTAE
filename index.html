@@ -136,7 +136,7 @@ Neha Verma 9876543210
 <div class="small">Name optional है. Number line में कहीं भी होगा तो add हो जाएगा.</div>
 </div>
 <div class="tools"><input id="search" class="search" placeholder="🔍 Search number / name..." oninput="renderList()"></div><div class="tabs"><button id="pendingTab" class="active" onclick="setTab('pending')">Pending (<span id="pendingCount">0</span>)</button><button id="doneTab" onclick="setTab('done')">Done (<span id="doneCount">0</span>)</button></div><div id="contactList" class="list"></div></section>
-<section class="card"><h2>Contact Detail <button class="gold" style="float:right;padding:9px 16px" onclick="saveRecord()">Save / Update</button></h2><div class="settings"><input id="webAppUrl" placeholder="Google Apps Script Web App URL paste karo"><button class="darkbtn" style="margin-top:8px" onclick="saveSettings()">Save URL</button></div><div class="detail"><div class="profile"><div class="phoneIcon">📞</div><div><div class="num" id="phoneShow">Select Contact</div><div class="name" id="nameShow">Pending list se number click karo</div></div></div><input id="name" class="hide"><input id="phone" class="hide"><label>Reason / Remark *</label><textarea id="remark" placeholder="Customer ne kya bola..."></textarea><div class="row"><div><label>Call Status</label><select id="status"><option>Connected</option><option>Not Connected</option><option>Busy</option><option>Wrong Number</option><option>Interested</option><option>Not Interested</option><option>Follow-up</option></select></div><div><label>Reminder Closed?</label><select id="reminderClosed"><option value="No">No</option><option value="Yes">Yes</option></select></div></div><div class="row"><div><label>Next Reminder Date</label><input id="reminderDate" type="date"></div><div><label>Reminder Time</label><input id="reminderTime" type="time" autocomplete="off"></div></div><label>Follow-up Remark / Reminder Note</label><textarea id="reminderNote" placeholder="3 baje call karna / kal available..."></textarea><div class="btns"><button class="gold" onclick="saveRecord()">Save & Move to Done</button><button class="darkbtn" onclick="clearForm()">Clear</button></div><p id="msg" class="small"></p></div></section>
+<section class="card"><h2>Contact Detail <button class="gold" style="float:right;padding:9px 16px" onclick="saveRecord()">Save / Update</button></h2><div class="settings"><input id="webAppUrl" placeholder="Google Apps Script Web App URL paste karo"><button class="darkbtn" style="margin-top:8px" onclick="saveSettings()">Save URL</button></div><div class="detail"><div class="profile"><div class="phoneIcon">📞</div><div><div class="num" id="phoneShow">Select Contact</div><div class="name" id="nameShow">Pending list se number click karo</div></div></div><input id="name" class="hide"><input id="phone" class="hide"><label>Reason / Remark *</label><textarea id="remark" placeholder="Customer ne kya bola..."></textarea><div class="row"><div><label>Call Status</label><select id="status"><option>Connected</option><option>Not Connected</option><option>Busy</option><option>Wrong Number</option><option>Interested</option><option>Not Interested</option><option>Follow-up</option></select></div><div><label>Reminder Closed?</label><select id="reminderClosed"><option value="No">No (Active)</option><option value="Yes">Yes (Closed)</option></select></div></div><div class="row"><div><label>Next Reminder Date</label><input id="reminderDate" type="date"></div><div><label>Reminder Time</label><input id="reminderTime" type="time" autocomplete="off"></div></div><label>Follow-up Remark / Reminder Note</label><textarea id="reminderNote" placeholder="3 baje call karna / kal available..."></textarea><div class="btns"><button class="gold" onclick="saveRecord()">Save & Move to Done</button><button class="darkbtn" onclick="clearForm()">Clear</button></div><p id="msg" class="small"></p></div></section>
 <section class="card"><h2>🔔 Reminders (<span id="remCount">0</span>)</h2><div id="reminderList" class="reminders"></div></section></div>
 
 <div id="reminderPopupOverlay" class="reminderPopupOverlay">
@@ -246,7 +246,9 @@ function saveRecord(){
    remark:(el('remark')?.value || '').trim(),
    reminderDate:el('reminderDate') ? el('reminderDate').value : '',
    reminderTime:timeVal,
-   reminderClosed:el('reminderClosed') ? el('reminderClosed').value : 'No',
+   // Reminder active tab me tabhi dikhega jab reminderClosed = 'No' ho.
+   // User galti se 'Yes' select kare, phir bhi date/time bharne par reminder active banega.
+   reminderClosed: ((el('reminderDate')?.value || '') || (el('reminderTime')?.value || '')) ? 'No' : (el('reminderClosed') ? el('reminderClosed').value : 'No'),
    reminderNote:(el('reminderNote')?.value || '').trim(),
    popupStopped: oldRec.popupStopped || 'No',
    snoozeUntil: oldRec.snoozeUntil || ''
@@ -261,7 +263,7 @@ function saveRecord(){
   setTab('done');
   renderReminders();
   fill(rec, editingRecordIndex);
-  msg(rec.reminderDate ? 'Save ho gaya. Number Done me chala gaya aur Reminder add ho gaya.' : 'Save ho gaya. Number Done me chala gaya. Reminder ke liye date/time bharo.');
+  msg((rec.reminderDate && rec.reminderTime) ? 'Save ho gaya. Number Done me chala gaya aur Reminder active list me add ho gaya.' : 'Save ho gaya. Number Done me chala gaya. Reminder ke liye date aur time dono bharo.');
  }catch(e){
   console.error(e);
   msg('Save error: '+e.message);

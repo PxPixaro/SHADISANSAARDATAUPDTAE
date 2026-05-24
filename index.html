@@ -271,7 +271,34 @@ function saveRecord(){
  }
 }
 function renderReminders(){stats();let box=reminderList,arr=records().map((r,i)=>({...r,_i:i})).filter(r=>r.reminderDate&&r.reminderClosed!=='Yes').sort((a,b)=>(a.reminderDate+a.reminderTime).localeCompare(b.reminderDate+b.reminderTime));box.innerHTML=arr.length?'':'<div class="small">No active reminders.</div>';arr.forEach(r=>{let d=document.createElement('div');d.className='rem';d.onclick=()=>{activeTab='done';setTab('done');fill(records()[r._i],r._i);msg('Reminder open हो गया. Remark update करके save करो.')};d.innerHTML='<div class="badge">⏰ '+esc(r.reminderDate)+' '+esc(r.reminderTime||'')+'</div><b>'+esc(r.phone)+' - '+esc(r.name||'')+'</b><p>'+esc(r.reminderNote||r.remark||'')+'</p><div class="small">Click to update</div>';box.appendChild(d)})}
-async function submitFullDay(){let url=webAppUrl.value.trim(),r=records();if(!url){submitMsg.textContent='Pehle Google Sheet URL paste karo.';return}if(!r.length){submitMsg.textContent='Submit karne ke liye data nahi hai.';return}submitMsg.textContent='Submitting...';try{await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'bulk',submittedAt:new Date().toLocaleString(),records:r})});submitMsg.textContent='Submitted Today: '+r.length+' records'}catch(e){submitMsg.textContent='Error. Local data safe hai.'}}
+async function submitFullDay(){
+ let url=webAppUrl.value.trim(), r=records();
+ if(!url){submitMsg.textContent='Pehle Google Sheet URL paste karo.';return}
+ if(!r.length){submitMsg.textContent='Submit karne ke liye data nahi hai.';return}
+ if(!confirm('Google Sheet me '+r.length+' records submit karke yaha ka Pending/Done/Reminder panel blank karna hai?')) return;
+ submitMsg.textContent='Submitting...';
+ try{
+   await fetch(url,{method:'POST',mode:'no-cors',headers:{'Content-Type':'application/json'},body:JSON.stringify({type:'bulk',submittedAt:new Date().toLocaleString(),records:r})});
+
+   // Safety backup: submitted data ka local backup rakha rahega, par screen/panel fresh ho jayega.
+   localStorage.setItem('LAST_SUBMITTED_BACKUP', JSON.stringify({submittedAt:new Date().toLocaleString(), contacts:contacts, records:r}));
+
+   contacts=[];
+   selectedPhone='';
+   editingRecordIndex=-1;
+   activeTab='pending';
+   localStorage.removeItem('MANUAL_CONTACTS');
+   localStorage.removeItem('CALL_RECORDS');
+   clearForm();
+   setTab('pending');
+   renderReminders();
+   submitMsg.textContent='Submitted Today: '+r.length+' records. Local panel blank ho gaya.';
+   msg('Submit ho gaya. Ab kal ke liye fresh/blank start karo.');
+ }catch(e){
+   submitMsg.textContent='Error. Local data safe hai.';
+   msg('Submit error: data clear nahi kiya gaya. Local data safe hai.');
+ }
+}
 function clearForm(){['name','phone','remark','reminderDate','reminderTime','reminderNote'].forEach(id=>document.getElementById(id).value='');phoneShow.textContent='Select Contact';nameShow.textContent='Pending list se number click karo';editingRecordIndex=-1;selectedPhone='';renderList()}
 function msg(t){document.getElementById('msg').textContent=t}function esc(s){return String(s).replace(/[&<>"']/g,m=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[m]))}
 
